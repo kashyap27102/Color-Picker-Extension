@@ -1,4 +1,4 @@
-# React Chrome Extension Boilerplate
+# Color Picker Chrome Extension
 
 ## Getting Started
 
