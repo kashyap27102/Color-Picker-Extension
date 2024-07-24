@@ -30,5 +30,8 @@
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^6.0.1"
+  },
+  "dependencies": {
+    "use-eye-dropper": "^1.6.1"
   }
 }
