@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import "./popup.css";
-import useEyeDropper from "use-eye-dropper";
-import { optionList } from "../utils";
 import ColorPicker from "../components/ColorPicker";
-
 import SpecialColors from "../components/SpecialColors";
 import ColorHistory from "../components/ColorHistory";
-import ColorPickerFromPage from "../components/ColorPickerFromPage";
 import ColorPalette from "../components/ColorPalette";
+import ColorAnalyzer from "../components/ColorAnalyzer";
+import { featuresList } from "../utils";
+import "./popup.css";
 
 const App: React.FC<{}> = () => {
   const [view, setView] = useState("");
@@ -23,11 +21,13 @@ const App: React.FC<{}> = () => {
         return <ColorHistory />;
       case "D":
         return <ColorPalette />;
+      case "E":
+        return <ColorAnalyzer />;
       default:
         return (
           <div className="w-[200px]">
             <ul className="">
-              {optionList.map((item) => (
+              {featuresList.map((item) => (
                 <li
                   key={item.id}
                   className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-200 transition duration-150 ease-in-out "

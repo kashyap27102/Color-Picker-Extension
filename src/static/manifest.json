@@ -13,7 +13,7 @@
     "default_title": "ColorCapture",
     "default_icon": "color-picker.png"
   },
-  "permissions": ["alarms", "storage"],
+  "permissions": ["alarms", "storage", "scripting", "activeTab", "tabs"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
