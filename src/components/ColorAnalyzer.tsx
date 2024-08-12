@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { sortRgbStringsByBrightness } from "../utils";
+import { copyToClipboard, sortRgbStringsByBrightness } from "../utils";
+import {
+  LocalStorageOption,
+  getStoredOptions,
+  setStoreColor,
+} from "../utils/storage";
 
 const ColorAnalyzer: React.FC = () => {
   const [extractedColors, setExtractedColors] = React.useState([]);
   const [isloading, setIsloading] = React.useState(false);
+  const [options, setOptions] = useState<LocalStorageOption | null>(null);
+
+  useEffect(() => {
+    getStoredOptions().then((options) => {
+      setOptions(options);
+    });
+  }, []);
 
   useEffect(() => {
     setIsloading(true);
@@ -13,6 +25,7 @@ const ColorAnalyzer: React.FC = () => {
         activeTab.id,
         { type: "FETCH_DATA" },
         (response) => {
+          console.log("Response from content script:", response);
           const sortedColors = sortRgbStringsByBrightness(response.colorSet);
           console.log("Response from content script:", sortedColors);
           setExtractedColors(sortedColors);
@@ -21,6 +34,20 @@ const ColorAnalyzer: React.FC = () => {
     });
     setIsloading(false);
   }, []);
+
+  const onClickHandler = (curColor: string) => {
+    // Save color to storage
+    options.saveColor && setStoreColor(curColor);
+
+    // copy to clipboard
+    if (options.autoCopy) {
+      copyToClipboard(curColor);
+    }
+    // Change color of Background
+    chrome.action.setBadgeBackgroundColor({
+      color: curColor,
+    });
+  };
 
   if (isloading) {
     return (
@@ -40,9 +67,7 @@ const ColorAnalyzer: React.FC = () => {
               className="col-span-1 rounded-sm h-5 cursor-pointer"
               style={{ backgroundColor: item }}
               onClick={() => {
-                chrome.action.setBadgeBackgroundColor({
-                  color: item,
-                });
+                onClickHandler(item);
               }}
             />
           ))

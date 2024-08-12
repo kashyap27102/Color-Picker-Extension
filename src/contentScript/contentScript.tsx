@@ -1,8 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
+import OpenPicker from "../components/OpenPicker";
 
 const App: React.FC<{}> = () => {
-  const extractColorFromWebpage = () => {
+  const [showColorPickerBox, setShowColorPickerBox] = useState(false);
+
+  console.log("content script running");
+
+  // function to extract color from webpage
+  const extractColorFromWebpage = async () => {
     const elements = document.querySelectorAll("*");
     const colorSet = new Set();
 
@@ -24,19 +30,31 @@ const App: React.FC<{}> = () => {
     });
     return Array.from(colorSet);
   };
-  console.log("content script running");
-  const colorSet = extractColorFromWebpage();
+
+  const colorSet = extractColorFromWebpage() || [];
+
+  // chrome runtime listener to send data to the popup.tsx
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "FETCH_DATA") {
-      console.log("content script", colorSet);
-      // Example: get the current tab's title
       sendResponse({ colorSet });
+    }
+    if (request.type === "SHOW_COLOR_PICKER") {
+      setShowColorPickerBox(true);
     }
   });
 
-  return null;
+  return (
+    showColorPickerBox && (
+      <OpenPicker setShowColorPickerBox={setShowColorPickerBox} />
+    )
+  );
 };
-const rootElement = document.createElement("div");
-document.body.appendChild(rootElement);
-const root = ReactDOM.createRoot(rootElement);
-root.render(<App />);
+
+const init = () => {
+  const rootElement = document.createElement("div");
+  document.body.appendChild(rootElement);
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+};
+
+document.addEventListener("DOMContentLoaded", init);

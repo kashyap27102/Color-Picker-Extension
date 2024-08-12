@@ -1,15 +1,16 @@
 export const featuresList = [
   {
     id: 1,
+    name: "Pick Color From Page",
+    icon: "browser.png",
+    view: "F",
+  },
+  {
+    id: 2,
     name: "Color Palette Generater",
     icon: "palette.png",
     view: "D",
   },
-  // {
-  //   id: 2,
-  //   name: "Pick Color Outside Browser",
-  //   icon: "browser.png",
-  // },
   {
     id: 3,
     name: "Color Picker Panel",
@@ -29,16 +30,17 @@ export const featuresList = [
     view: "C",
   },
   {
-    id: 5,
+    id: 6,
     name: "Webpage Color Analyzer",
     icon: "webpage.png",
     view: "E",
   },
-  // {
-  //   id: 10,
-  //   name: "Options",
-  //   icon: "cogwheel.png",
-  // },
+  {
+    id: 7,
+    name: "Options",
+    icon: "cogwheel.png",
+    view: "G",
+  },
 ];
 
 export const copyToClipboard = (text: string) => {

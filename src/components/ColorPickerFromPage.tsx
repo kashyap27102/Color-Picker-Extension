@@ -1,35 +1,23 @@
-import React, { useState } from "react";
-import { EyeDropper, useEyeDrop } from "react-eyedrop";
+import React, { useEffect, useState } from "react";
 
 const ColorPickerFromPage = () => {
-  const [pickedColor, setPickedColor] = React.useState("#bada55");
-  function getColor({ rgb, hex }) {
-    setPickedColor(hex);
-    console.log(rgb, hex);
-  }
-  const [color, setColor] = useState({
-    rgb: "",
-    hex: "yellow",
+  useEffect(() => {
+    console.log(history.state);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTab = tabs[0];
+      chrome.scripting
+        .executeScript({
+          target: { tabId: activeTab.id },
+          files: ["contentScript.js"],
+        })
+        .then(() => {
+          chrome.tabs.sendMessage(activeTab.id, { type: "SHOW_COLOR_PICKER" });
+          window.close();
+        });
+    });
   });
 
-  console;
-
-  return (
-    <div>
-      <EyeDropper onChange={getColor} />
-      <div
-        style={{
-          height: 100,
-          width: "100%",
-          background: color.hex,
-          marginBottom: 10,
-        }}
-      />
-      <button>
-        <span>Click me</span>
-      </button>
-    </div>
-  );
+  return null;
 };
 
 export default ColorPickerFromPage;

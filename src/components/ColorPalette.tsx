@@ -1,6 +1,12 @@
-import React, { useState } from "react";
-import { setStoreColor } from "../utils/storage";
+import React, { useEffect, useState } from "react";
+import {
+  LocalStorage,
+  LocalStorageOption,
+  getStoredOptions,
+  setStoreColor,
+} from "../utils/storage";
 import { copyToClipboard } from "../utils";
+import { Tooltip } from "./Tooltip";
 
 interface ColorPaletteProps {}
 
@@ -21,12 +27,19 @@ const ColorPalette: React.FC<ColorPaletteProps> = () => {
   const [palette, setPalette] = useState<string[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [options, setOptions] = useState<LocalStorageOption | null>(null);
+
+  useEffect(() => {
+    getStoredOptions().then((val) => {
+      setOptions(val);
+    });
+  });
 
   const handleCopy = (color: string, index: number) => {
-    setStoreColor(color);
+    options.saveColor && setStoreColor(color);
+    options.autoCopy && copyToClipboard(color);
+    options.autoCopy && setCopiedIndex(index);
     chrome.action.setBadgeBackgroundColor({ color });
-    copyToClipboard(color);
-    setCopiedIndex(index);
     setTimeout(() => {
       setCopiedIndex(null);
     }, 1000);
@@ -54,6 +67,8 @@ const ColorPalette: React.FC<ColorPaletteProps> = () => {
     setPalette(colors);
     setSelectedColor(baseColor);
   };
+
+  if (!options) return null;
 
   return (
     <div className="p-4 w-[500px] bg-gray-800">
@@ -84,18 +99,14 @@ const ColorPalette: React.FC<ColorPaletteProps> = () => {
                 style={{ backgroundColor: color }}
                 onClick={() => handleCopy(color, index)}
               >
-                <span className="absolute opacity-0 group-hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 bottom-full mb-1">
-                  {copiedIndex === index ? "Copied!" : color}
-                  <svg
-                    className="absolute text-black h-2 w-full left-0 top-full"
-                    viewBox="0 0 255 255"
-                  >
-                    <polygon
-                      className="fill-current"
-                      points="0,0 127.5,127.5 255,0"
-                    />
-                  </svg>
-                </span>
+                {options.tooltip && (
+                  <Tooltip
+                    copiedIndex={copiedIndex}
+                    index={index}
+                    color={color}
+                    autoCopy={options.autoCopy}
+                  />
+                )}
               </div>
             ))}
           </div>

@@ -16,12 +16,15 @@
   "permissions": ["alarms", "storage", "scripting", "activeTab", "tabs"],
   "options_page": "options.html",
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
+      "js": ["contentScript.js"],
+      "css": ["tailwind.css"],
+      "run_at": "document_end"
     }
   ]
 }

@@ -1,9 +1,50 @@
+export interface LocalStorageOption {
+  autoCopy: boolean;
+  tooltip: boolean;
+  saveColor: true;
+  historyLimit: number;
+}
+
 export interface LocalStorage {
-  color: string;
-  colorHistory: string[];
+  color?: string;
+  colorHistory?: string[];
+  options?: LocalStorageOption;
 }
 
 export type LocalStorageKeys = keyof LocalStorage;
+export type LocalStorageOptionKeys = keyof LocalStorageOption;
+
+// Set Options to storage
+export const setStoreOptions = async (options: LocalStorageOption) => {
+  console.log("options", options);
+  const val: LocalStorageOption = options;
+  chrome.storage.local.set({ options: val }).then(() => {
+    console.log("Options stored successfully.");
+  });
+};
+
+// Get Options from storage
+export const getStoredOptions = async (): Promise<LocalStorageOption> => {
+  const keys: LocalStorageKeys[] = ["options"];
+
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("options", (result) => {
+      console.log("result", result.options);
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(
+          result.options || {
+            autoCopy: false,
+            tooltip: false,
+            saveColor: true,
+            historyLimit: 10,
+          }
+        );
+      }
+    });
+  });
+};
 
 // Set color to storage
 export const setStoreColor = async (color: string) => {
@@ -56,6 +97,29 @@ export const deleteColorFromHistory = async (color: string) => {
   });
 };
 
+// clear color history
 export const clearHistory = () => {
   chrome.storage.local.set({ colorHistory: [] });
+};
+
+// function to get color option
+export const getColorOptions = async (): Promise<LocalStorageOption> => {
+  const keys: LocalStorageKeys[] = ["options"];
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(keys, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(
+          result.options || {
+            autoCopy: false,
+            copyFormate: "hex",
+            tooltip: false,
+            saveColor: true,
+            historyLimit: 30,
+          }
+        );
+      }
+    });
+  });
 };

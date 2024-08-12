@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { SketchPicker } from "react-color";
 import {
+  LocalStorageOption,
   clearHistory,
+  getColorOptions,
   getLastStoredColor,
   getStoredColorHistory,
   setStoreColor,
 } from "../utils/storage";
 import { MdDelete } from "react-icons/md";
+import { View } from "../popup/popup";
+import ColorHistory from "./ColorHistory";
 
 interface ColorPickerProps {
-  setView: (view: string) => void;
+  setView: (view: View) => void;
 }
 
 const ColorPicker = ({ setView }: ColorPickerProps) => {
   const [color, setColor] = useState<string | null>(null);
   const [colorHistory, setColorHistory] = useState<string[]>([]);
+  const [options, setOptions] = useState<LocalStorageOption | null>(null);
+
+  // Function to handle color change
   const handleColorChange = (color) => {
     setColor(color.hex);
   };
 
+  // Function to fetch data from storage
   const fetchData = async () => {
     const color = await getLastStoredColor();
     const colorHistory = await getStoredColorHistory();
+    const options = await getColorOptions();
+    setOptions(options);
     setColor(color);
     setColorHistory(colorHistory);
   };
@@ -38,14 +48,14 @@ const ColorPicker = ({ setView }: ColorPickerProps) => {
   };
 
   const handleSaveColor = () => {
-    setStoreColor(color);
+    options.saveColor && setStoreColor(color);
     chrome.action.setBadgeBackgroundColor({
       color: color,
     });
     setView(null);
   };
 
-  if (!color) {
+  if (!color && !options) {
     return null;
   }
 
@@ -72,14 +82,15 @@ const ColorPicker = ({ setView }: ColorPickerProps) => {
         </button>
         <hr />
         <div className="">
-          <div className="flex justify-between items-center mb-2">
+          {/* <div className="flex justify-between items-center mb-2">
             <h3 className="text-base text-md">Color history</h3>
             <MdDelete
               className="h-5 w-5 cursor-pointer text-red-600"
               onClick={onDeleteIconClick}
             />
-          </div>
-          <div className="grid grid-cols-10">
+          </div> */}
+          <ColorHistory />
+          {/* <div className="grid grid-cols-10">
             {colorHistory.map((item) => (
               <div
                 key={item}
@@ -101,7 +112,7 @@ const ColorPicker = ({ setView }: ColorPickerProps) => {
             <div className="col-span-1 border h-5 w-5"></div>
             <div className="col-span-1 border h-5 w-5"></div>
             <div className="col-span-1 border h-5 w-5"></div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
