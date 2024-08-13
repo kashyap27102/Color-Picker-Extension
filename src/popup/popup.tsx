@@ -17,17 +17,17 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (view) {
       case "A":
-        return <ColorPicker setView={setView} />;
-      case "B":
-        return <SpecialColors />;
-      case "C":
-        return <ColorHistory />;
-      case "D":
-        return <ColorPalette />;
-      case "E":
-        return <ColorAnalyzer />;
-      case "F":
         return <ColorPickerFromPage />;
+      case "B":
+        return <ColorPalette />;
+      case "C":
+        return <ColorPicker setView={setView} />;
+      case "D":
+        return <SpecialColors />;
+      case "E":
+        return <ColorHistory />;
+      case "F":
+        return <ColorAnalyzer />;
       case "G":
         chrome.runtime.openOptionsPage();
       default:

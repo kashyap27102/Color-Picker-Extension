@@ -4,7 +4,8 @@
   "description": "this is a browser extension",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --watch --progress --config webpack.dev.js",
+    "build:tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./dist/tailwind.css --minify",
+    "start": "npm run build:tailwind && webpack --watch --progress --config webpack.dev.js",
     "build": "webpack --watch --progress --config webpack.prod.js"
   },
   "author": "",

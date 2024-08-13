@@ -1,6 +1,6 @@
 {
   "name": "Color Capture",
-  "description": "A precise and zoomable eyedropper and color chooser tool for selecting color values from webpages and screen elements.",
+  "description": "An eyedropper and color chooser tool for selecting color values from webpages and screen elements.",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
@@ -24,7 +24,7 @@
       "matches": ["<all_urls>"],
       "js": ["contentScript.js"],
       "css": ["tailwind.css"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ]
 }

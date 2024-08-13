@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { copyToClipboard, sortRgbStringsByBrightness } from "../utils";
+import { copyToClipboard } from "../utils";
 import {
   LocalStorageOption,
   getStoredOptions,
@@ -7,10 +7,10 @@ import {
 } from "../utils/storage";
 
 const ColorAnalyzer: React.FC = () => {
-  const [extractedColors, setExtractedColors] = React.useState([]);
-  const [isloading, setIsloading] = React.useState(false);
+  const [extractedColors, setExtractedColors] = useState([]);
+  const [isloading, setIsloading] = useState(false);
   const [options, setOptions] = useState<LocalStorageOption | null>(null);
-
+  console.log("render", extractedColors);
   useEffect(() => {
     getStoredOptions().then((options) => {
       setOptions(options);
@@ -19,16 +19,14 @@ const ColorAnalyzer: React.FC = () => {
 
   useEffect(() => {
     setIsloading(true);
+    // Fetch data from the content script
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       chrome.tabs.sendMessage(
         activeTab.id,
         { type: "FETCH_DATA" },
         (response) => {
-          console.log("Response from content script:", response);
-          const sortedColors = sortRgbStringsByBrightness(response.colorSet);
-          console.log("Response from content script:", sortedColors);
-          setExtractedColors(sortedColors);
+          setExtractedColors(response.response);
         }
       );
     });

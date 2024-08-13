@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SketchPicker } from "react-color";
+import { View } from "../popup/popup";
+import ColorHistory from "./ColorHistory";
 import {
   LocalStorageOption,
   clearHistory,
@@ -8,22 +10,31 @@ import {
   getStoredColorHistory,
   setStoreColor,
 } from "../utils/storage";
-import { MdDelete } from "react-icons/md";
-import { View } from "../popup/popup";
-import ColorHistory from "./ColorHistory";
 
 interface ColorPickerProps {
   setView: (view: View) => void;
 }
 
+/* 
+  Color Picker component that provide a color picker pannel where user can select a color and save it.
+*/
 const ColorPicker = ({ setView }: ColorPickerProps) => {
   const [color, setColor] = useState<string | null>(null);
   const [colorHistory, setColorHistory] = useState<string[]>([]);
   const [options, setOptions] = useState<LocalStorageOption | null>(null);
 
   // Function to handle color change
-  const handleColorChange = (color) => {
+  const handleColorChange = (color: { hex: string }) => {
     setColor(color.hex);
+  };
+
+  // Function to handle color save
+  const handleSaveColor = () => {
+    options.saveColor && setStoreColor(color);
+    chrome.action.setBadgeBackgroundColor({
+      color: color,
+    });
+    setView(null);
   };
 
   // Function to fetch data from storage
@@ -39,21 +50,6 @@ const ColorPicker = ({ setView }: ColorPickerProps) => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const onDeleteIconClick = () => {
-    if (confirm("Are you sure you want to delete all history?")) {
-      clearHistory();
-      setColorHistory([]);
-    }
-  };
-
-  const handleSaveColor = () => {
-    options.saveColor && setStoreColor(color);
-    chrome.action.setBadgeBackgroundColor({
-      color: color,
-    });
-    setView(null);
-  };
 
   if (!color && !options) {
     return null;
@@ -81,38 +77,8 @@ const ColorPicker = ({ setView }: ColorPickerProps) => {
           Cancle
         </button>
         <hr />
-        <div className="">
-          {/* <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base text-md">Color history</h3>
-            <MdDelete
-              className="h-5 w-5 cursor-pointer text-red-600"
-              onClick={onDeleteIconClick}
-            />
-          </div> */}
+        <div>
           <ColorHistory />
-          {/* <div className="grid grid-cols-10">
-            {colorHistory.map((item) => (
-              <div
-                key={item}
-                className="col-span-1 border h-5 w-5 cursor-pointer"
-                style={{ backgroundColor: item }}
-                onClick={() => {
-                  setColor(item);
-                }}
-              />
-            ))}
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-            <div className="col-span-1 border h-5 w-5"></div>
-          </div> */}
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 const ColorPickerFromPage = () => {
   useEffect(() => {
-    console.log(history.state);
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       chrome.scripting

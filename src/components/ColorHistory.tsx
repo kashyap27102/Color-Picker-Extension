@@ -15,6 +15,7 @@ const ColorHistory = () => {
   const [buttonText, setButtonText] = useState<string>("OK");
   const [color, setColor] = useState<string>("");
 
+  // Fetch data from storage
   const fetchData = async () => {
     const colorHistory = await getStoredColorHistory();
     const settings = await getStoredOptions();
@@ -26,6 +27,7 @@ const ColorHistory = () => {
     fetchData();
   }, []);
 
+  // Handle button click
   const onButtonClick = () => {
     options.saveColor && setStoreColor(color);
     options.autoCopy && copyToClipboard(color);
@@ -35,11 +37,13 @@ const ColorHistory = () => {
     }, 1000);
   };
 
+  // Handle color box click
   const onColorBoxClick = (color: string) => {
     setColor(color);
     chrome.action.setBadgeBackgroundColor({ color });
   };
 
+  // Handle delete icon click
   const onDeleteIconClick = () => {
     if (confirm("Are you sure you want to delete all history?")) {
       clearHistory();
@@ -47,6 +51,7 @@ const ColorHistory = () => {
     }
   };
 
+  //  Render the color history
   const renderColorHistory = () => {
     const length = colorHistory.length;
     const maxLength = options.historyLimit;

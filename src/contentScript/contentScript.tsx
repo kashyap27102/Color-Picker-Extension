@@ -7,36 +7,31 @@ const App: React.FC<{}> = () => {
 
   console.log("content script running");
 
-  // function to extract color from webpage
-  const extractColorFromWebpage = async () => {
-    const elements = document.querySelectorAll("*");
-    const colorSet = new Set();
-
-    elements.forEach((element) => {
-      const style = window.getComputedStyle(element);
-      const backgroundColor = style.backgroundColor;
-      const color = style.color;
-
-      if (
-        backgroundColor !== "rgba(0, 0, 0, 0)" &&
-        backgroundColor !== "transparent"
-      ) {
-        colorSet.add(backgroundColor);
-      }
-
-      if (color !== "rgba(0, 0, 0, 0)" && color !== "transparent") {
-        colorSet.add(color);
-      }
-    });
-    return Array.from(colorSet);
-  };
-
-  const colorSet = extractColorFromWebpage() || [];
-
   // chrome runtime listener to send data to the popup.tsx
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "FETCH_DATA") {
-      sendResponse({ colorSet });
+      const elements = document.querySelectorAll("*");
+      const colorSet = new Set();
+
+      elements.forEach((element) => {
+        const style = window.getComputedStyle(element);
+        const backgroundColor = style.backgroundColor;
+        const color = style.color;
+
+        if (
+          backgroundColor !== "rgba(0, 0, 0, 0)" &&
+          backgroundColor !== "transparent"
+        ) {
+          colorSet.add(backgroundColor);
+        }
+
+        if (color !== "rgba(0, 0, 0, 0)" && color !== "transparent") {
+          colorSet.add(color);
+        }
+      });
+
+      const response = Array.from(colorSet);
+      sendResponse(response);
     }
     if (request.type === "SHOW_COLOR_PICKER") {
       setShowColorPickerBox(true);
